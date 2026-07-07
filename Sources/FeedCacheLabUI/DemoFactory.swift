@@ -6,6 +6,13 @@ import FeedCacheLabCore
 /// a single `@main` file, per this repo's separation between "library" and
 /// "thin app shell".
 public enum DemoFactory {
+    /// `@MainActor`-isolated because `FeedViewModel` itself is `@MainActor`
+    /// (it's an `@Observable` view model meant to be read/written from
+    /// SwiftUI view code only). This factory is called from `DemoAppApp`'s
+    /// `body`, which SwiftUI's `App` protocol already isolates to the main
+    /// actor, so the call site stays synchronous — this annotation just
+    /// makes that isolation explicit instead of relying on inference.
+    @MainActor
     public static func makeSampleFeedViewModel() -> FeedViewModel {
         let fetcher = SimulatedImageFetcher()
         let loader = CachingImageLoader(fetcher: fetcher)
